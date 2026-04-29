@@ -32,6 +32,10 @@
     .brand { font-family: var(--font-display); font-size: 1.9rem; letter-spacing: .08em; }
     .brand span { color: var(--gold); }
     .badge { border: 1px solid var(--gold-border); background: var(--gold-bg); color: var(--gold-light); font-family: var(--font-cond); font-size: .65rem; letter-spacing: .2em; text-transform: uppercase; padding: .28rem .7rem; }
+    .biq-link { display: flex; align-items: baseline; gap: .35rem; text-decoration: none; opacity: .7; transition: opacity .18s; }
+    .biq-link:hover { opacity: 1; }
+    .biq-link .biq-logo { font-family: var(--font-display); font-size: 1.3rem; letter-spacing: .06em; color: var(--gold); line-height: 1; }
+    .biq-link .biq-sub { font-family: var(--font-cond); font-size: .55rem; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
 
     .page { max-width: 1100px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
 
@@ -111,7 +115,13 @@
 <header class="navbar">
   <div class="nav-inner">
     <div class="brand">HOOPCOACH <span>AI</span></div>
-    <div class="badge">Mistral-powered training</div>
+    <div style="display:flex;align-items:center;gap:1.2rem;">
+      <div class="badge">Mistral-powered training</div>
+      <a href="https://biq-mind.vercel.app/" target="_blank" rel="noopener noreferrer" class="biq-link" title="Back to BIQ">
+        <span class="biq-logo">BIQ</span>
+        <span class="biq-sub">Basketball Intelligence</span>
+      </a>
+    </div>
   </div>
 </header>
 
@@ -288,10 +298,7 @@
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({ detail: "Unknown error" }));
-const detail = Array.isArray(err.detail)
-  ? err.detail.map(e => `${e.loc?.slice(-1)[0]}: ${e.msg}`).join(", ")
-  : (err.detail || `HTTP ${res.status}`);
-throw new Error(detail);
+        throw new Error(err.detail || `HTTP ${res.status}`);
       }
 
       const data = await res.json();
