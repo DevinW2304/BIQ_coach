@@ -1,9 +1,15 @@
+import sys
+from pathlib import Path
+
+# Make the project root importable so `from app.x import y` still works
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from pathlib import Path
 from typing import Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 
 from app.workout_generator import generate_workout_plan
@@ -12,18 +18,13 @@ app = FastAPI(title="HoopCoach AI API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://biq-coach.vercel.app",
-        "http://localhost:8000",
-        "http://127.0.0.1:8000",
-    ],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Absolute path so Vercel can find the file regardless of working directory
-FRONTEND_DIR = Path(__file__).parent / "frontend"
+FRONTEND = Path(__file__).parent.parent / "frontend" / "index.html"
 
 
 class WorkoutRequest(BaseModel):
@@ -65,5 +66,4 @@ def generate_workout(payload: WorkoutRequest) -> WorkoutResponse:
 @app.get("/")
 @app.get("/app")
 def serve_frontend() -> HTMLResponse:
-    html_file = FRONTEND_DIR / "index.html"
-    return HTMLResponse(content=html_file.read_text(encoding="utf-8"))
+    return HTMLResponse(content=FRONTEND.read_text(encoding="utf-8"))
