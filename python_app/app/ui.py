@@ -74,7 +74,7 @@ def run_cli() -> None:
 
     while True:
         print("\n" + "=" * 56)
-        print("HOOPCOACH AI".center(56))
+        print("HOOPCOACH".center(56))
         print("=" * 56)
         print("1. Generate new workout")
         print("2. Save last workout to text file")

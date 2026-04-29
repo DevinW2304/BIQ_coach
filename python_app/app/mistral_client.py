@@ -14,7 +14,7 @@ SYSTEM_PROMPT = (
 def generate_text(prompt: str) -> str:
     if not settings.mistral_api_key:
         raise ValueError(
-            "Missing MISTRAL_API_KEY. Add it to your .env file before running the app."
+            "Missing MISTRAL_API_KEY. Add it to  .env"
         )
 
     with Mistral(api_key=settings.mistral_api_key) as client:
