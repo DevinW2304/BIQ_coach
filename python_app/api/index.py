@@ -6,13 +6,11 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
-from mangum import Mangum
 from mistralai import Mistral
 from pydantic import BaseModel, Field
 
 load_dotenv()
 
-# ── Config ────────────────────────────────────────────────────────
 MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY", "").strip()
 MISTRAL_MODEL   = os.getenv("MISTRAL_MODEL", "mistral-small-latest").strip()
 
@@ -26,7 +24,6 @@ SYSTEM_PROMPT = (
 FRONTEND = Path(__file__).parent.parent / "frontend" / "index.html"
 
 
-# ── Prompt builder ────────────────────────────────────────────────
 def build_prompt(position, skill_level, strengths, weaknesses, available_time, primary_goal, environment):
     return f"""
 Create a practical basketball workout plan for one player.
@@ -43,7 +40,7 @@ Player profile:
 Instructions:
 - Make the workout basketball-specific, realistic, and safe.
 - Fit the full plan into approximately {available_time} minutes.
-- Tailor the drills to the player's position, skill level, strengths, weaknesses, and goal.
+- Tailor drills to the player's position, skill level, strengths, weaknesses, and goal.
 - Respect the training environment.
 - Keep the workout actionable and easy to follow.
 - Use a confident but supportive coaching tone.
@@ -77,7 +74,6 @@ MOTIVATIONAL SUMMARY
 """.strip()
 
 
-# ── Mistral call ──────────────────────────────────────────────────
 def generate_text(prompt: str) -> str:
     if not MISTRAL_API_KEY:
         raise ValueError("Missing MISTRAL_API_KEY environment variable.")
@@ -96,7 +92,6 @@ def generate_text(prompt: str) -> str:
     return content.strip()
 
 
-# ── FastAPI app ───────────────────────────────────────────────────
 app = FastAPI(title="HoopCoach AI")
 
 app.add_middleware(
@@ -145,7 +140,3 @@ def generate_workout(payload: WorkoutRequest):
 @app.get("/app")
 def serve_frontend():
     return HTMLResponse(content=FRONTEND.read_text(encoding="utf-8"))
-
-
-# ── Vercel handler ────────────────────────────────────────────────
-handler = Mangum(app)
