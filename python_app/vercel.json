@@ -1,10 +1,6 @@
 {
-  "functions": {
-    "api/index.py": {
-      "includeFiles": "frontend/index.html"
-    }
-  },
   "rewrites": [
-    { "source": "/(.*)", "destination": "/api/index" }
+    { "source": "/generate-workout", "destination": "/api/index" },
+    { "source": "/health", "destination": "/api/index" }
   ]
 }

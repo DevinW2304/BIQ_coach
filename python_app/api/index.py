@@ -1,11 +1,9 @@
 import os
-from pathlib import Path
 from typing import Optional
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
 from mistralai import Mistral
 from pydantic import BaseModel, Field
 
@@ -20,8 +18,6 @@ SYSTEM_PROMPT = (
     "skill level, strengths, weaknesses, available time, and training environment. "
     "Your workouts should feel realistic, practical, and useful for actual improvement."
 )
-
-FRONTEND = Path(__file__).parent.parent / "frontend" / "index.html"
 
 
 def build_prompt(position, skill_level, strengths, weaknesses, available_time, primary_goal, environment):
@@ -125,7 +121,7 @@ def health():
 @app.post("/generate-workout", response_model=WorkoutResponse)
 def generate_workout(payload: WorkoutRequest):
     try:
-        prompt  = build_prompt(
+        prompt = build_prompt(
             payload.position, payload.skill_level, payload.strengths,
             payload.weaknesses, payload.available_time, payload.primary_goal,
             payload.environment or "court",
@@ -134,9 +130,3 @@ def generate_workout(payload: WorkoutRequest):
         return WorkoutResponse(workout=workout)
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
-
-
-@app.get("/")
-@app.get("/app")
-def serve_frontend():
-    return HTMLResponse(content=FRONTEND.read_text(encoding="utf-8"))

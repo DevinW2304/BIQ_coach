@@ -9,247 +9,101 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Barlow+Condensed:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
       color-scheme: dark;
-      --bg:            #060709;
-      --s1:            #0d0f14;
-      --s2:            #131720;
-      --s3:            #1a2030;
-      --border:        rgba(255,255,255,0.06);
-      --border-mid:    rgba(255,255,255,0.10);
+      --bg: #060709; --s1: #0d0f14; --s2: #131720; --s3: #1a2030;
+      --border: rgba(255,255,255,0.06); --border-mid: rgba(255,255,255,0.10);
       --border-strong: rgba(255,255,255,0.14);
-      --text:          #eef2f8;
-      --text-2:        #c7d1df;
-      --muted:         #9aa8bb;
-      --gold:          #c9a84c;
-      --gold-light:    #e8c56e;
-      --gold-border:   rgba(201,168,76,0.25);
-      --gold-bg:       rgba(201,168,76,0.08);
-      --teal:          #34c6ad;
-      --red:           #e05c5c;
-      --font-display:  'Bebas Neue', sans-serif;
-      --font-cond:     'Barlow Condensed', sans-serif;
-      --font-mono:     'DM Mono', monospace;
-      --radius:        2px;
+      --text: #eef2f8; --text-2: #c7d1df; --muted: #9aa8bb;
+      --gold: #c9a84c; --gold-light: #e8c56e;
+      --gold-border: rgba(201,168,76,0.25); --gold-bg: rgba(201,168,76,0.08);
+      --teal: #34c6ad; --red: #e05c5c;
+      --font-display: 'Bebas Neue', sans-serif;
+      --font-cond: 'Barlow Condensed', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+      --radius: 2px;
     }
-
     html { scroll-behavior: smooth; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font-mono);
-      font-size: 14px;
-      min-height: 100vh;
-      line-height: 1.6;
-    }
-    body::before {
-      content: '';
-      position: fixed; inset: 0;
-      pointer-events: none; opacity: 0.022;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-mono); font-size: 14px; min-height: 100vh; line-height: 1.6; }
+    body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opacity: 0.022; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
 
-    /* ── Navbar ── */
-    .navbar {
-      position: sticky; top: 0; z-index: 20;
-      backdrop-filter: blur(18px) saturate(1.4);
-      background: rgba(6,7,9,0.88);
-      border-bottom: 1px solid var(--border);
-    }
-    .nav-inner {
-      max-width: 1100px; margin: 0 auto;
-      padding: .9rem 2rem;
-      display: flex; justify-content: space-between; align-items: center;
-    }
+    .navbar { position: sticky; top: 0; z-index: 20; backdrop-filter: blur(18px) saturate(1.4); background: rgba(6,7,9,0.88); border-bottom: 1px solid var(--border); }
+    .nav-inner { max-width: 1100px; margin: 0 auto; padding: .9rem 2rem; display: flex; justify-content: space-between; align-items: center; }
     .brand { font-family: var(--font-display); font-size: 1.9rem; letter-spacing: .08em; }
     .brand span { color: var(--gold); }
-    .badge {
-      border: 1px solid var(--gold-border); background: var(--gold-bg);
-      color: var(--gold-light); font-family: var(--font-cond);
-      font-size: .65rem; letter-spacing: .2em; text-transform: uppercase;
-      padding: .28rem .7rem;
-    }
+    .badge { border: 1px solid var(--gold-border); background: var(--gold-bg); color: var(--gold-light); font-family: var(--font-cond); font-size: .65rem; letter-spacing: .2em; text-transform: uppercase; padding: .28rem .7rem; }
 
-    /* ── Page ── */
     .page { max-width: 1100px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
 
-    /* ── Hero ── */
-    .hero {
-      border: 1px solid var(--border); background: var(--s1);
-      padding: 2.2rem 2.4rem; margin-bottom: 2rem;
-      position: relative; overflow: hidden;
-    }
-    .hero::after {
-      content: 'HC'; position: absolute; right: -1.5rem; top: -2.5rem;
-      font-family: var(--font-display); font-size: 14rem; line-height: 1;
-      color: transparent; -webkit-text-stroke: 1px rgba(201,168,76,0.055);
-      pointer-events: none;
-    }
-    .kicker {
-      font-family: var(--font-cond); color: var(--gold);
-      letter-spacing: .22em; text-transform: uppercase;
-      font-size: .7rem; margin-bottom: .5rem;
-    }
-    .hero h1 {
-      font-family: var(--font-display);
-      font-size: clamp(2.8rem, 5vw, 4.4rem);
-      line-height: .92; letter-spacing: .04em; margin-bottom: .9rem;
-    }
+    .hero { border: 1px solid var(--border); background: var(--s1); padding: 2.2rem 2.4rem; margin-bottom: 2rem; position: relative; overflow: hidden; }
+    .hero::after { content: 'HC'; position: absolute; right: -1.5rem; top: -2.5rem; font-family: var(--font-display); font-size: 14rem; line-height: 1; color: transparent; -webkit-text-stroke: 1px rgba(201,168,76,0.055); pointer-events: none; }
+    .kicker { font-family: var(--font-cond); color: var(--gold); letter-spacing: .22em; text-transform: uppercase; font-size: .7rem; margin-bottom: .5rem; }
+    .hero h1 { font-family: var(--font-display); font-size: clamp(2.8rem, 5vw, 4.4rem); line-height: .92; letter-spacing: .04em; margin-bottom: .9rem; }
     .hero h1 em { color: var(--gold); font-style: normal; }
     .hero p { color: var(--text-2); max-width: 60ch; font-size: .9rem; line-height: 1.75; }
 
-    /* ── Layout ── */
-    .layout {
-      display: grid;
-      grid-template-columns: 380px 1fr;
-      gap: 1.5rem; align-items: start;
-    }
+    .layout { display: grid; grid-template-columns: 380px 1fr; gap: 1.5rem; align-items: start; }
 
-    /* ── Form card ── */
     .form-card { background: var(--s1); border: 1px solid var(--border); }
-    .form-card-header {
-      padding: 1.1rem 1.4rem; border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; gap: .6rem;
-    }
+    .form-card-header { padding: 1.1rem 1.4rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: .6rem; }
     .form-card-header h2 { font-family: var(--font-display); font-size: 1.3rem; letter-spacing: .06em; }
     .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
     .form-body { padding: 1.4rem; display: grid; gap: 1rem; }
 
     .field { display: grid; gap: .35rem; }
-    .field label {
-      font-family: var(--font-cond); text-transform: uppercase;
-      letter-spacing: .16em; font-size: .65rem; color: var(--muted);
-    }
-    .field input, .field select, .field textarea {
-      background: var(--s2); border: 1px solid var(--border-mid);
-      color: var(--text); font-family: var(--font-mono); font-size: .82rem;
-      padding: .6rem .8rem; border-radius: var(--radius);
-      outline: none; transition: border-color .18s; width: 100%;
-    }
+    .field label { font-family: var(--font-cond); text-transform: uppercase; letter-spacing: .16em; font-size: .65rem; color: var(--muted); }
+    .field input, .field select, .field textarea { background: var(--s2); border: 1px solid var(--border-mid); color: var(--text); font-family: var(--font-mono); font-size: .82rem; padding: .6rem .8rem; border-radius: var(--radius); outline: none; transition: border-color .18s; width: 100%; }
     .field textarea { resize: vertical; min-height: 70px; }
     .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--gold-border); }
     .field select option { background: var(--s2); }
 
     .time-row { display: grid; grid-template-columns: 1fr auto; gap: .5rem; align-items: end; }
-    .time-display {
-      font-family: var(--font-display); font-size: 2rem;
-      color: var(--gold); letter-spacing: .04em;
-      line-height: 1; padding-bottom: .4rem; white-space: nowrap;
-    }
-    .field input[type=range] {
-      padding: 0; height: 36px; background: transparent; border: none; cursor: pointer;
-    }
-    .field input[type=range]::-webkit-slider-runnable-track {
-      height: 3px; background: var(--s3); border-radius: 2px;
-    }
-    .field input[type=range]::-webkit-slider-thumb {
-      -webkit-appearance: none; width: 14px; height: 14px;
-      border-radius: 50%; background: var(--gold); margin-top: -5.5px; cursor: pointer;
-    }
+    .time-display { font-family: var(--font-display); font-size: 2rem; color: var(--gold); letter-spacing: .04em; line-height: 1; padding-bottom: .4rem; white-space: nowrap; }
+    .field input[type=range] { padding: 0; height: 36px; background: transparent; border: none; cursor: pointer; }
+    .field input[type=range]::-webkit-slider-runnable-track { height: 3px; background: var(--s3); border-radius: 2px; }
+    .field input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--gold); margin-top: -5.5px; cursor: pointer; }
 
-    .btn-generate {
-      width: 100%; padding: .9rem;
-      background: var(--gold); color: #060709;
-      font-family: var(--font-display); font-size: 1.15rem; letter-spacing: .1em;
-      border: none; cursor: pointer; border-radius: var(--radius);
-      transition: background .18s, transform .1s; margin-top: .4rem;
-    }
+    .btn-generate { width: 100%; padding: .9rem; background: var(--gold); color: #060709; font-family: var(--font-display); font-size: 1.15rem; letter-spacing: .1em; border: none; cursor: pointer; border-radius: var(--radius); transition: background .18s, transform .1s; margin-top: .4rem; }
     .btn-generate:hover { background: var(--gold-light); }
     .btn-generate:active { transform: scale(.98); }
     .btn-generate:disabled { background: var(--s3); color: var(--muted); cursor: not-allowed; }
 
-    /* ── Output panel ── */
-    .output-panel {
-      background: var(--s1); border: 1px solid var(--border);
-      min-height: 480px; display: flex; flex-direction: column;
-    }
-    .output-header {
-      padding: 1.1rem 1.4rem; border-bottom: 1px solid var(--border);
-      display: flex; justify-content: space-between; align-items: center;
-    }
+    .output-panel { background: var(--s1); border: 1px solid var(--border); min-height: 480px; display: flex; flex-direction: column; }
+    .output-header { padding: 1.1rem 1.4rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
     .output-header h2 { font-family: var(--font-display); font-size: 1.3rem; letter-spacing: .06em; }
-    .status-chip {
-      font-family: var(--font-cond); font-size: .62rem; letter-spacing: .18em;
-      text-transform: uppercase; padding: .22rem .55rem;
-      border: 1px solid var(--border-mid); color: var(--muted);
-    }
-    .status-chip.ready  { border-color: var(--gold-border); color: var(--gold-light); }
-    .status-chip.loading{ border-color: rgba(52,198,173,0.35); color: var(--teal); }
-    .status-chip.error  { border-color: rgba(224,92,92,0.35); color: var(--red); }
+    .status-chip { font-family: var(--font-cond); font-size: .62rem; letter-spacing: .18em; text-transform: uppercase; padding: .22rem .55rem; border: 1px solid var(--border-mid); color: var(--muted); }
+    .status-chip.ready { border-color: var(--gold-border); color: var(--gold-light); }
+    .status-chip.loading { border-color: rgba(52,198,173,0.35); color: var(--teal); }
+    .status-chip.error { border-color: rgba(224,92,92,0.35); color: var(--red); }
 
     .output-body { flex: 1; padding: 1.6rem; overflow-y: auto; }
 
-    .empty-state {
-      height: 100%; display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: .8rem; text-align: center; padding: 3rem;
-    }
+    .empty-state { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .8rem; text-align: center; padding: 3rem; }
     .empty-icon { font-size: 3.5rem; opacity: .15; font-family: var(--font-display); letter-spacing: .04em; color: var(--gold); }
     .empty-state p { color: var(--muted); font-size: .85rem; max-width: 34ch; line-height: 1.7; }
 
-    .loader {
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      height: 100%; gap: 1.2rem; padding: 3rem;
-    }
-    .spinner {
-      width: 36px; height: 36px;
-      border: 2px solid var(--border-strong); border-top-color: var(--gold);
-      border-radius: 50%; animation: spin .8s linear infinite;
-    }
+    .loader { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 1.2rem; padding: 3rem; }
+    .spinner { width: 36px; height: 36px; border: 2px solid var(--border-strong); border-top-color: var(--gold); border-radius: 50%; animation: spin .8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .loader p { color: var(--muted); font-size: .82rem; letter-spacing: .08em; }
 
-    .error-box {
-      border: 1px solid rgba(224,92,92,0.25); background: rgba(224,92,92,0.05);
-      padding: 1rem 1.2rem; color: var(--red); font-size: .85rem; line-height: 1.7;
-    }
+    .error-box { border: 1px solid rgba(224,92,92,0.25); background: rgba(224,92,92,0.05); padding: 1rem 1.2rem; color: var(--red); font-size: .85rem; line-height: 1.7; }
 
     .workout-output { animation: fadeUp .3s ease both; }
     @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
-
     .workout-section { margin-bottom: 1.6rem; }
     .workout-section:last-child { margin-bottom: 0; }
-
-    .section-label {
-      font-family: var(--font-cond); text-transform: uppercase; letter-spacing: .22em;
-      font-size: .65rem; color: var(--gold); margin-bottom: .55rem;
-      display: flex; align-items: center; gap: .5rem;
-    }
+    .section-label { font-family: var(--font-cond); text-transform: uppercase; letter-spacing: .22em; font-size: .65rem; color: var(--gold); margin-bottom: .55rem; display: flex; align-items: center; gap: .5rem; }
     .section-label::after { content: ''; flex: 1; height: 1px; background: var(--gold-border); }
-
     .workout-title-text { font-family: var(--font-display); font-size: 2rem; letter-spacing: .04em; line-height: 1; }
-    .workout-time-badge {
-      display: inline-block; border: 1px solid var(--gold-border); background: var(--gold-bg);
-      color: var(--gold-light); font-family: var(--font-cond);
-      font-size: .7rem; letter-spacing: .18em; text-transform: uppercase; padding: .3rem .7rem; margin-top: .5rem;
-    }
+    .workout-time-badge { display: inline-block; border: 1px solid var(--gold-border); background: var(--gold-bg); color: var(--gold-light); font-family: var(--font-cond); font-size: .7rem; letter-spacing: .18em; text-transform: uppercase; padding: .3rem .7rem; margin-top: .5rem; }
     .workout-text { color: var(--text-2); font-size: .86rem; line-height: 1.85; white-space: pre-wrap; }
-    .motivation-box {
-      border-left: 3px solid var(--gold); padding: .8rem 1rem;
-      background: var(--gold-bg); color: var(--text-2);
-      font-size: .86rem; line-height: 1.8; white-space: pre-wrap;
-    }
-
-    .btn-save {
-      margin-top: 1.5rem; padding: .6rem 1.2rem;
-      background: transparent; border: 1px solid var(--border-strong);
-      color: var(--text-2); font-family: var(--font-cond);
-      font-size: .75rem; letter-spacing: .18em; text-transform: uppercase;
-      cursor: pointer; border-radius: var(--radius); transition: border-color .18s, color .18s;
-    }
+    .motivation-box { border-left: 3px solid var(--gold); padding: .8rem 1rem; background: var(--gold-bg); color: var(--text-2); font-size: .86rem; line-height: 1.8; white-space: pre-wrap; }
+    .btn-save { margin-top: 1.5rem; padding: .6rem 1.2rem; background: transparent; border: 1px solid var(--border-strong); color: var(--text-2); font-family: var(--font-cond); font-size: .75rem; letter-spacing: .18em; text-transform: uppercase; cursor: pointer; border-radius: var(--radius); transition: border-color .18s, color .18s; }
     .btn-save:hover { border-color: var(--gold-border); color: var(--gold-light); }
 
-    @media (max-width: 860px) {
-      .layout { grid-template-columns: 1fr; }
-      .hero h1 { font-size: 2.6rem; }
-    }
-    @media (max-width: 540px) {
-      .page { padding: 1.5rem 1rem 3rem; }
-      .nav-inner { padding: .8rem 1rem; }
-      .hero { padding: 1.5rem; }
-    }
+    @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } .hero h1 { font-size: 2.6rem; } }
+    @media (max-width: 540px) { .page { padding: 1.5rem 1rem 3rem; } .nav-inner { padding: .8rem 1rem; } .hero { padding: 1.5rem; } }
   </style>
 </head>
 <body>
@@ -269,14 +123,12 @@
   </section>
 
   <div class="layout">
-
     <aside class="form-card">
       <div class="form-card-header">
         <div class="dot"></div>
         <h2>PLAYER PROFILE</h2>
       </div>
       <div class="form-body">
-
         <div class="field">
           <label>Position</label>
           <select id="position">
@@ -290,7 +142,6 @@
             <option value="combo guard">Combo Guard</option>
           </select>
         </div>
-
         <div class="field">
           <label>Skill Level</label>
           <select id="skillLevel">
@@ -301,17 +152,14 @@
             <option value="elite">Elite / Collegiate</option>
           </select>
         </div>
-
         <div class="field">
           <label>Strengths</label>
           <textarea id="strengths" placeholder="e.g. ball handling, court vision, athleticism…"></textarea>
         </div>
-
         <div class="field">
           <label>Weaknesses</label>
           <textarea id="weaknesses" placeholder="e.g. off-hand finishing, shot consistency…"></textarea>
         </div>
-
         <div class="field">
           <label>Available Time</label>
           <div class="time-row">
@@ -320,12 +168,10 @@
             <div class="time-display" id="timeDisplay">45 min</div>
           </div>
         </div>
-
         <div class="field">
           <label>Primary Training Goal</label>
           <input type="text" id="primaryGoal" placeholder="e.g. improve pull-up jumper off the dribble" />
         </div>
-
         <div class="field">
           <label>Environment</label>
           <select id="environment">
@@ -334,11 +180,7 @@
             <option value="home">Home</option>
           </select>
         </div>
-
-        <button class="btn-generate" id="generateBtn" onclick="generateWorkout()">
-          GENERATE WORKOUT
-        </button>
-
+        <button class="btn-generate" id="generateBtn" onclick="generateWorkout()">GENERATE WORKOUT</button>
       </div>
     </aside>
 
@@ -354,12 +196,10 @@
         </div>
       </div>
     </section>
-
   </div>
 </main>
 
 <script>
-  // Same domain — no need for an absolute URL since frontend is served by FastAPI
   const API_BASE = "";
 
   function setStatus(state, text) {
@@ -374,14 +214,14 @@
 
   function parseWorkout(raw) {
     const sections = {
-      "WORKOUT TITLE":      { label: "Workout Title", type: "title" },
-      "TOTAL TIME":         { label: "Total Time",    type: "badge" },
-      "WARM-UP":            { label: "Warm-Up",       type: "text"  },
-      "SKILL DRILLS":       { label: "Skill Drills",  type: "text"  },
-      "CONDITIONING":       { label: "Conditioning",  type: "text"  },
-      "COOLDOWN":           { label: "Cooldown",      type: "text"  },
-      "COACHING POINTS":    { label: "Coaching Points", type: "text" },
-      "MOTIVATIONAL SUMMARY": { label: "Motivation",  type: "motivation" },
+      "WORKOUT TITLE":        { label: "Workout Title", type: "title" },
+      "TOTAL TIME":           { label: "Total Time",    type: "badge" },
+      "WARM-UP":              { label: "Warm-Up",       type: "text"  },
+      "SKILL DRILLS":         { label: "Skill Drills",  type: "text"  },
+      "CONDITIONING":         { label: "Conditioning",  type: "text"  },
+      "COOLDOWN":             { label: "Cooldown",      type: "text"  },
+      "COACHING POINTS":      { label: "Coaching Points", type: "text" },
+      "MOTIVATIONAL SUMMARY": { label: "Motivation",    type: "motivation" },
     };
     const keys = Object.keys(sections);
     const result = [];
@@ -400,29 +240,12 @@
   function renderWorkout(raw) {
     const sections = parseWorkout(raw);
     if (!sections) return `<div class="workout-text">${escapeHtml(raw)}</div>`;
-
     const html = sections.map(s => {
-      if (s.type === "title") return `
-        <div class="workout-section">
-          <div class="section-label">${s.label}</div>
-          <div class="workout-title-text">${escapeHtml(s.content)}</div>
-        </div>`;
-      if (s.type === "badge") return `
-        <div class="workout-section">
-          <div class="workout-time-badge">⏱ ${escapeHtml(s.content)}</div>
-        </div>`;
-      if (s.type === "motivation") return `
-        <div class="workout-section">
-          <div class="section-label">${s.label}</div>
-          <div class="motivation-box">${escapeHtml(s.content)}</div>
-        </div>`;
-      return `
-        <div class="workout-section">
-          <div class="section-label">${s.label}</div>
-          <div class="workout-text">${escapeHtml(s.content)}</div>
-        </div>`;
+      if (s.type === "title") return `<div class="workout-section"><div class="section-label">${s.label}</div><div class="workout-title-text">${escapeHtml(s.content)}</div></div>`;
+      if (s.type === "badge") return `<div class="workout-section"><div class="workout-time-badge">⏱ ${escapeHtml(s.content)}</div></div>`;
+      if (s.type === "motivation") return `<div class="workout-section"><div class="section-label">${s.label}</div><div class="motivation-box">${escapeHtml(s.content)}</div></div>`;
+      return `<div class="workout-section"><div class="section-label">${s.label}</div><div class="workout-text">${escapeHtml(s.content)}</div></div>`;
     }).join("");
-
     return html + `<button class="btn-save" onclick="saveWorkout()">↓ Save as .txt</button>`;
   }
 
@@ -439,19 +262,14 @@
 
     if (!position || !skillLevel || !strengths || !weaknesses || !goal) {
       setStatus("error", "INCOMPLETE");
-      document.getElementById("outputBody").innerHTML =
-        `<div class="error-box">Please fill in all fields before generating a workout.</div>`;
+      document.getElementById("outputBody").innerHTML = `<div class="error-box">Please fill in all fields before generating a workout.</div>`;
       return;
     }
 
     const btn = document.getElementById("generateBtn");
     btn.disabled = true;
     setStatus("loading", "GENERATING…");
-    document.getElementById("outputBody").innerHTML = `
-      <div class="loader">
-        <div class="spinner"></div>
-        <p>Building your personalized workout…</p>
-      </div>`;
+    document.getElementById("outputBody").innerHTML = `<div class="loader"><div class="spinner"></div><p>Building your personalized workout…</p></div>`;
 
     try {
       const res = await fetch(`${API_BASE}/generate-workout`, {
@@ -476,13 +294,11 @@
       const data = await res.json();
       lastWorkout = data.workout;
       setStatus("ready", "READY");
-      document.getElementById("outputBody").innerHTML =
-        `<div class="workout-output">${renderWorkout(lastWorkout)}</div>`;
+      document.getElementById("outputBody").innerHTML = `<div class="workout-output">${renderWorkout(lastWorkout)}</div>`;
 
     } catch (err) {
       setStatus("error", "ERROR");
-      document.getElementById("outputBody").innerHTML =
-        `<div class="error-box"><strong>Error:</strong> ${escapeHtml(err.message)}</div>`;
+      document.getElementById("outputBody").innerHTML = `<div class="error-box"><strong>Error:</strong> ${escapeHtml(err.message)}</div>`;
     } finally {
       btn.disabled = false;
     }
@@ -498,6 +314,5 @@
     URL.revokeObjectURL(url);
   }
 </script>
-
 </body>
 </html>
