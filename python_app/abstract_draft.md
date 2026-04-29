@@ -1,0 +1,7 @@
+# Abstract Draft
+
+HoopCoach AI is a small generative AI application designed to create personalized basketball workouts for individual players. The problem it addresses is that many athletes, especially students and casual players, do not always know how to build structured training sessions that match their position, skill level, weaknesses, and time constraints. Generic workouts found online are often too broad, unrealistic for the player’s setting, or disconnected from specific basketball goals. This makes the training process less efficient and can slow player development.
+
+This problem is worth solving because a better training plan can make practice more focused, safer, and more motivating. A player with only thirty or forty-five minutes available should still be able to get a useful, basketball-specific workout instead of wasting time deciding what to do. HoopCoach AI uses the Mistral API to transform a few user inputs into a complete workout plan that includes a warm-up, skill drills, conditioning, cooldown, coaching points, and a motivational summary. The application is implemented in Python and uses a standard terminal-based input and output loop, making it simple to run and easy to understand.
+
+The solution was designed with a modular structure so each part of the system has a clear role, including configuration, prompting, API communication, workout generation, and user interaction. This keeps the project polished enough for submission while still being simple enough to extend later.
