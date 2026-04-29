@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
+from mangum import Mangum
 from mistralai import Mistral
 from pydantic import BaseModel, Field
 
@@ -23,6 +24,7 @@ SYSTEM_PROMPT = (
 )
 
 FRONTEND = Path(__file__).parent.parent / "frontend" / "index.html"
+
 
 # ── Prompt builder ────────────────────────────────────────────────
 def build_prompt(position, skill_level, strengths, weaknesses, available_time, primary_goal, environment):
@@ -143,3 +145,7 @@ def generate_workout(payload: WorkoutRequest):
 @app.get("/app")
 def serve_frontend():
     return HTMLResponse(content=FRONTEND.read_text(encoding="utf-8"))
+
+
+# ── Vercel handler ────────────────────────────────────────────────
+handler = Mangum(app)

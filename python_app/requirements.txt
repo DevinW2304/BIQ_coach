@@ -3,3 +3,4 @@ uvicorn
 mistralai
 python-dotenv
 pydantic
+mangum
