@@ -1,5 +1,5 @@
 fastapi
 uvicorn
-mistralai
+mistralai>=1.0.0
 python-dotenv
 pydantic
