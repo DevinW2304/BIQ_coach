@@ -1,9 +1,9 @@
+from pathlib import Path
 from typing import Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from pydantic import BaseModel, Field
 
 from app.workout_generator import generate_workout_plan
@@ -21,6 +21,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Absolute path so Vercel can find the file regardless of working directory
+FRONTEND_DIR = Path(__file__).parent / "frontend"
 
 
 class WorkoutRequest(BaseModel):
@@ -59,10 +62,8 @@ def generate_workout(payload: WorkoutRequest) -> WorkoutResponse:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 
 
-# Serve frontend — must be after all API routes so they take priority
-app.mount("/static", StaticFiles(directory="frontend"), name="static")
-
 @app.get("/")
 @app.get("/app")
-def serve_frontend() -> FileResponse:
-    return FileResponse("frontend/index.html")
+def serve_frontend() -> HTMLResponse:
+    html_file = FRONTEND_DIR / "index.html"
+    return HTMLResponse(content=html_file.read_text(encoding="utf-8"))
