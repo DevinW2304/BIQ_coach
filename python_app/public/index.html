@@ -1,122 +1,155 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HoopCoach Workout Generator</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Barlow+Condensed:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      color-scheme: dark;
-      --bg: #060709; --s1: #0d0f14; --s2: #131720; --s3: #1a2030;
-      --border: rgba(255,255,255,0.06); --border-mid: rgba(255,255,255,0.10);
-      --border-strong: rgba(255,255,255,0.14);
-      --text: #eef2f8; --text-2: #c7d1df; --muted: #9aa8bb;
-      --gold: #c9a84c; --gold-light: #e8c56e;
-      --gold-border: rgba(201,168,76,0.25); --gold-bg: rgba(201,168,76,0.08);
-      --teal: #34c6ad; --red: #e05c5c;
-      --font-display: 'Bebas Neue', sans-serif;
-      --font-cond: 'Barlow Condensed', sans-serif;
-      --font-mono: 'DM Mono', monospace;
-      --radius: 2px;
-    }
-    html { scroll-behavior: smooth; }
-    body { background: var(--bg); color: var(--text); font-family: var(--font-mono); font-size: 14px; min-height: 100vh; line-height: 1.6; }
-    body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opacity: 0.022; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>HoopCoach AI — Personalized Basketball Workouts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Barlow+Condensed:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  color-scheme:dark;
+  --bg:#060709;--s1:#0d0f14;--s2:#131720;--s3:#1a2030;
+  --border:rgba(255,255,255,0.06);--border-mid:rgba(255,255,255,0.10);--border-strong:rgba(255,255,255,0.15);
+  --text:#eef2f8;--text-2:#c7d1df;--muted:#8a9bb0;
+  --gold:#c9a84c;--gold-lt:#e8c56e;--gold-dim:rgba(201,168,76,0.55);
+  --gold-b:rgba(201,168,76,0.28);--gold-bg:rgba(201,168,76,0.08);
+  --teal:#34c6ad;--teal-b:rgba(52,198,173,0.3);--teal-bg:rgba(52,198,173,0.07);
+  --red:#e05c5c;--red-b:rgba(224,92,92,0.28);--red-bg:rgba(224,92,92,0.06);
+  --fd:'Bebas Neue',sans-serif;--fc:'Barlow Condensed',sans-serif;--fm:'DM Mono',monospace;
+  --r:2px;--tr:0.17s ease;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--fm);font-size:14px;min-height:100vh;line-height:1.6;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.02;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+#bgCanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
+.above{position:relative;z-index:2;}
 
-    .navbar { position: sticky; top: 0; z-index: 20; backdrop-filter: blur(18px) saturate(1.4); background: rgba(6,7,9,0.88); border-bottom: 1px solid var(--border); }
-    .nav-inner { max-width: 1100px; margin: 0 auto; padding: .9rem 2rem; display: flex; justify-content: space-between; align-items: center; }
-    .brand { font-family: var(--font-display); font-size: 1.9rem; letter-spacing: .08em; }
-    .brand span { color: var(--gold); }
-    .badge { border: 1px solid var(--gold-border); background: var(--gold-bg); color: var(--gold-light); font-family: var(--font-cond); font-size: .65rem; letter-spacing: .2em; text-transform: uppercase; padding: .28rem .7rem; }
-    .biq-link { display: flex; align-items: baseline; gap: .35rem; text-decoration: none; opacity: .7; transition: opacity .18s; }
-    .biq-link:hover { opacity: 1; }
-    .biq-link .biq-logo { font-family: var(--font-display); font-size: 1.3rem; letter-spacing: .06em; color: var(--gold); line-height: 1; }
-    .biq-link .biq-sub { font-family: var(--font-cond); font-size: .55rem; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+.nav{position:sticky;top:0;z-index:20;backdrop-filter:blur(22px) saturate(1.5);background:rgba(6,7,9,0.91);border-bottom:1px solid var(--border);}
+.nav-in{max-width:1160px;margin:0 auto;padding:.8rem 2rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;}
+.brand{font-family:var(--fd);font-size:1.85rem;letter-spacing:.08em;}
+.brand em{color:var(--gold);font-style:normal;}
+.nav-r{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;}
+.badge{border:1px solid var(--gold-b);background:var(--gold-bg);color:var(--gold-lt);font-family:var(--fc);font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;padding:.24rem .6rem;}
+.badge-teal{border-color:var(--teal-b);background:var(--teal-bg);color:var(--teal);}
+.biq-link{display:flex;align-items:baseline;gap:.3rem;text-decoration:none;opacity:.65;transition:opacity var(--tr);}
+.biq-link:hover{opacity:1;}
+.biq-logo{font-family:var(--fd);font-size:1.3rem;letter-spacing:.06em;color:var(--gold);line-height:1;}
+.biq-sub{font-family:var(--fc);font-size:.52rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);}
 
-    .page { max-width: 1100px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
+.page{max-width:1160px;margin:0 auto;padding:2.5rem 2rem 6rem;}
 
-    .hero { border: 1px solid var(--border); background: var(--s1); padding: 2.2rem 2.4rem; margin-bottom: 2rem; position: relative; overflow: hidden; }
-    .hero::after { content: 'HC'; position: absolute; right: -1.5rem; top: -2.5rem; font-family: var(--font-display); font-size: 14rem; line-height: 1; color: transparent; -webkit-text-stroke: 1px rgba(201,168,76,0.055); pointer-events: none; }
-    .kicker { font-family: var(--font-cond); color: var(--gold); letter-spacing: .22em; text-transform: uppercase; font-size: .7rem; margin-bottom: .5rem; }
-    .hero h1 { font-family: var(--font-display); font-size: clamp(2.8rem, 5vw, 4.4rem); line-height: .92; letter-spacing: .04em; margin-bottom: .9rem; }
-    .hero h1 em { color: var(--gold); font-style: normal; }
-    .hero p { color: var(--text-2); max-width: 60ch; font-size: .9rem; line-height: 1.75; }
+.hero{padding:2.5rem 0 1.6rem;}
+.hero-inner{max-width:600px;}
+.kicker{font-family:var(--fc);color:var(--gold);letter-spacing:.22em;text-transform:uppercase;font-size:.66rem;margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem;}
+.kicker::before{content:'';display:inline-block;width:18px;height:1px;background:var(--gold);}
+h1{font-family:var(--fd);font-size:clamp(2.8rem,5.5vw,4.8rem);line-height:.91;letter-spacing:.04em;margin-bottom:.9rem;}
+h1 em{color:var(--gold);font-style:normal;}
+.hero p{color:var(--text-2);font-size:.87rem;line-height:1.8;max-width:54ch;}
 
-    .layout { display: grid; grid-template-columns: 380px 1fr; gap: 1.5rem; align-items: start; }
+.presets{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:1.5rem 0 2rem;}
+.ps-label{font-family:var(--fc);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);flex-shrink:0;}
+.ps-btn{padding:.38rem .82rem;background:var(--s2);border:1px solid var(--border-mid);color:var(--text-2);font-family:var(--fc);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border-radius:var(--r);transition:border-color var(--tr),color var(--tr),background var(--tr);display:flex;align-items:center;gap:.38rem;}
+.ps-btn:hover{border-color:var(--gold-b);color:var(--gold-lt);background:var(--gold-bg);}
+.ps-tag{background:var(--gold-bg);border:1px solid var(--gold-b);color:var(--gold);font-size:.52rem;padding:.08rem .3rem;letter-spacing:.1em;}
 
-    .form-card { background: var(--s1); border: 1px solid var(--border); }
-    .form-card-header { padding: 1.1rem 1.4rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: .6rem; }
-    .form-card-header h2 { font-family: var(--font-display); font-size: 1.3rem; letter-spacing: .06em; }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
-    .form-body { padding: 1.4rem; display: grid; gap: 1rem; }
+.layout{display:grid;grid-template-columns:360px 1fr;gap:1.5rem;align-items:start;}
 
-    .field { display: grid; gap: .35rem; }
-    .field label { font-family: var(--font-cond); text-transform: uppercase; letter-spacing: .16em; font-size: .65rem; color: var(--muted); }
-    .field input, .field select, .field textarea { background: var(--s2); border: 1px solid var(--border-mid); color: var(--text); font-family: var(--font-mono); font-size: .82rem; padding: .6rem .8rem; border-radius: var(--radius); outline: none; transition: border-color .18s; width: 100%; }
-    .field textarea { resize: vertical; min-height: 70px; }
-    .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--gold-border); }
-    .field select option { background: var(--s2); }
+.fc-wrap{background:var(--s1);border:1px solid var(--border);}
+.fc-head{padding:1rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.65rem;}
+.fc-head h2{font-family:var(--fd);font-size:1.2rem;letter-spacing:.06em;}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0;}
+.fc-sec{padding:.95rem 1.4rem;border-bottom:1px solid var(--border);}
+.fc-sec:last-of-type{border-bottom:none;}
+.fc-sec-lbl{font-family:var(--fc);font-size:.56rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-dim);margin-bottom:.75rem;display:flex;align-items:center;gap:.4rem;}
+.fc-sec-lbl::after{content:'';flex:1;height:1px;background:var(--gold-b);}
+.fc-grid{display:grid;gap:.8rem;}
 
-    .time-row { display: grid; grid-template-columns: 1fr auto; gap: .5rem; align-items: end; }
-    .time-display { font-family: var(--font-display); font-size: 2rem; color: var(--gold); letter-spacing: .04em; line-height: 1; padding-bottom: .4rem; white-space: nowrap; }
-    .field input[type=range] { padding: 0; height: 36px; background: transparent; border: none; cursor: pointer; }
-    .field input[type=range]::-webkit-slider-runnable-track { height: 3px; background: var(--s3); border-radius: 2px; }
-    .field input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--gold); margin-top: -5.5px; cursor: pointer; }
+.field{display:grid;gap:.3rem;}
+.field label{font-family:var(--fc);text-transform:uppercase;letter-spacing:.16em;font-size:.58rem;color:var(--muted);}
+.field input,.field select,.field textarea{background:var(--s2);border:1px solid var(--border-mid);color:var(--text);font-family:var(--fm);font-size:.8rem;padding:.52rem .72rem;border-radius:var(--r);outline:none;transition:border-color var(--tr),background var(--tr);width:100%;}
+.field textarea{resize:vertical;min-height:62px;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold-b);background:var(--s3);}
+.field select option{background:var(--s2);}
+.char-c{font-size:.56rem;color:var(--muted);text-align:right;letter-spacing:.06em;margin-top:.15rem;}
+.char-c.warn{color:var(--red);}
+.row2{display:grid;grid-template-columns:1fr auto;gap:.55rem;align-items:end;}
+.time-disp{font-family:var(--fd);font-size:2rem;color:var(--gold);letter-spacing:.04em;line-height:1;padding-bottom:.25rem;white-space:nowrap;}
+.field input[type=range]{padding:0;height:30px;background:transparent;border:none;cursor:pointer;}
+.field input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--s3);border-radius:2px;}
+.field input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--gold);margin-top:-5.5px;cursor:pointer;transition:background var(--tr);}
+.field input[type=range]:hover::-webkit-slider-thumb{background:var(--gold-lt);}
 
-    .btn-generate { width: 100%; padding: .9rem; background: var(--gold); color: #060709; font-family: var(--font-display); font-size: 1.15rem; letter-spacing: .1em; border: none; cursor: pointer; border-radius: var(--radius); transition: background .18s, transform .1s; margin-top: .4rem; }
-    .btn-generate:hover { background: var(--gold-light); }
-    .btn-generate:active { transform: scale(.98); }
-    .btn-generate:disabled { background: var(--s3); color: var(--muted); cursor: not-allowed; }
+.btn-gen{width:100%;padding:.9rem;background:var(--gold);color:#060709;font-family:var(--fd);font-size:1.15rem;letter-spacing:.1em;border:none;cursor:pointer;border-radius:var(--r);transition:background var(--tr),transform .1s;display:flex;align-items:center;justify-content:center;gap:.5rem;}
+.btn-gen:hover{background:var(--gold-lt);}
+.btn-gen:active{transform:scale(.98);}
+.btn-gen:disabled{background:var(--s3);color:var(--muted);cursor:not-allowed;}
+.btn-arrow{font-size:.95rem;transition:transform var(--tr);}
+.btn-gen:not(:disabled):hover .btn-arrow{transform:translateX(3px);}
 
-    .output-panel { background: var(--s1); border: 1px solid var(--border); min-height: 480px; display: flex; flex-direction: column; }
-    .output-header { padding: 1.1rem 1.4rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-    .output-header h2 { font-family: var(--font-display); font-size: 1.3rem; letter-spacing: .06em; }
-    .status-chip { font-family: var(--font-cond); font-size: .62rem; letter-spacing: .18em; text-transform: uppercase; padding: .22rem .55rem; border: 1px solid var(--border-mid); color: var(--muted); }
-    .status-chip.ready { border-color: var(--gold-border); color: var(--gold-light); }
-    .status-chip.loading { border-color: rgba(52,198,173,0.35); color: var(--teal); }
-    .status-chip.error { border-color: rgba(224,92,92,0.35); color: var(--red); }
+.out-panel{background:var(--s1);border:1px solid var(--border);min-height:520px;display:flex;flex-direction:column;}
+.out-head{padding:1rem 1.4rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.out-head h2{font-family:var(--fd);font-size:1.2rem;letter-spacing:.06em;}
+.out-acts{display:flex;align-items:center;gap:.55rem;}
+.chip{font-family:var(--fc);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;padding:.2rem .5rem;border:1px solid var(--border-mid);color:var(--muted);}
+.chip.ready{border-color:var(--gold-b);color:var(--gold-lt);}
+.chip.loading{border-color:var(--teal-b);color:var(--teal);}
+.chip.error{border-color:var(--red-b);color:var(--red);}
+.act-btn{padding:.26rem .6rem;background:transparent;border:1px solid var(--border-strong);color:var(--muted);font-family:var(--fc);font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;border-radius:var(--r);transition:border-color var(--tr),color var(--tr);}
+.act-btn:hover{border-color:var(--gold-b);color:var(--gold-lt);}
+.act-btn:disabled{opacity:.38;cursor:not-allowed;}
 
-    .output-body { flex: 1; padding: 1.6rem; overflow-y: auto; }
+.out-body{flex:1;padding:1.8rem 1.6rem;overflow-y:auto;}
 
-    .empty-state { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .8rem; text-align: center; padding: 3rem; }
-    .empty-icon { font-size: 3.5rem; opacity: .15; font-family: var(--font-display); letter-spacing: .04em; color: var(--gold); }
-    .empty-state p { color: var(--muted); font-size: .85rem; max-width: 34ch; line-height: 1.7; }
+.empty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem;text-align:center;padding:3rem;}
+.empty-court{width:110px;height:86px;opacity:.07;}
+.empty p{color:var(--muted);font-size:.82rem;max-width:30ch;line-height:1.75;}
+.empty strong{color:var(--text-2);}
 
-    .loader { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 1.2rem; padding: 3rem; }
-    .spinner { width: 36px; height: 36px; border: 2px solid var(--border-strong); border-top-color: var(--gold); border-radius: 50%; animation: spin .8s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .loader p { color: var(--muted); font-size: .82rem; letter-spacing: .08em; }
+.loader{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:1.4rem;padding:3rem;}
+.spin-ring{width:38px;height:38px;border:2px solid var(--border-strong);border-top-color:var(--gold);border-radius:50%;animation:spin .72s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.load-msg{color:var(--muted);font-size:.78rem;letter-spacing:.08em;}
 
-    .error-box { border: 1px solid rgba(224,92,92,0.25); background: rgba(224,92,92,0.05); padding: 1rem 1.2rem; color: var(--red); font-size: .85rem; line-height: 1.7; }
+.err-box{border:1px solid var(--red-b);background:var(--red-bg);padding:1rem 1.2rem;color:var(--red);font-size:.84rem;line-height:1.7;}
 
-    .workout-output { animation: fadeUp .3s ease both; }
-    @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
-    .workout-section { margin-bottom: 1.6rem; }
-    .workout-section:last-child { margin-bottom: 0; }
-    .section-label { font-family: var(--font-cond); text-transform: uppercase; letter-spacing: .22em; font-size: .65rem; color: var(--gold); margin-bottom: .55rem; display: flex; align-items: center; gap: .5rem; }
-    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--gold-border); }
-    .workout-title-text { font-family: var(--font-display); font-size: 2rem; letter-spacing: .04em; line-height: 1; }
-    .workout-time-badge { display: inline-block; border: 1px solid var(--gold-border); background: var(--gold-bg); color: var(--gold-light); font-family: var(--font-cond); font-size: .7rem; letter-spacing: .18em; text-transform: uppercase; padding: .3rem .7rem; margin-top: .5rem; }
-    .workout-text { color: var(--text-2); font-size: .86rem; line-height: 1.85; white-space: pre-wrap; }
-    .motivation-box { border-left: 3px solid var(--gold); padding: .8rem 1rem; background: var(--gold-bg); color: var(--text-2); font-size: .86rem; line-height: 1.8; white-space: pre-wrap; }
-    .btn-save { margin-top: 1.5rem; padding: .6rem 1.2rem; background: transparent; border: 1px solid var(--border-strong); color: var(--text-2); font-family: var(--font-cond); font-size: .75rem; letter-spacing: .18em; text-transform: uppercase; cursor: pointer; border-radius: var(--radius); transition: border-color .18s, color .18s; }
-    .btn-save:hover { border-color: var(--gold-border); color: var(--gold-light); }
+.wo{animation:fadeUp .32s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.wo-header{margin-bottom:1.6rem;}
+.wo-title{font-family:var(--fd);font-size:2.3rem;letter-spacing:.04em;line-height:1;margin-bottom:.6rem;}
+.wo-meta{display:flex;gap:.55rem;flex-wrap:wrap;align-items:center;}
+.wo-badge{display:inline-flex;align-items:center;gap:.35rem;border:1px solid var(--gold-b);background:var(--gold-bg);color:var(--gold-lt);font-family:var(--fc);font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;padding:.26rem .65rem;}
+.wo-sections{display:grid;gap:1px;background:var(--border);margin-bottom:1.4rem;border:1px solid var(--border);}
+.ws{background:var(--s1);padding:1.05rem 1.15rem;}
+.ws-head{display:flex;align-items:center;gap:.55rem;margin-bottom:.55rem;}
+.ws-icon{width:26px;height:26px;background:var(--gold-bg);border:1px solid var(--gold-b);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;color:var(--gold);}
+.ws-label{font-family:var(--fc);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);}
+.ws-body{color:var(--text-2);font-size:.83rem;line-height:1.9;white-space:pre-wrap;padding-left:32px;}
+.ws.motiv{background:var(--s2);border-left:3px solid var(--gold);}
+.ws.motiv .ws-body{color:var(--text);font-size:.86rem;}
+.wo-footer{display:flex;gap:.55rem;flex-wrap:wrap;}
+.btn-act{padding:.52rem 1rem;background:transparent;border:1px solid var(--border-strong);color:var(--text-2);font-family:var(--fc);font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;border-radius:var(--r);transition:border-color var(--tr),color var(--tr),background var(--tr);display:flex;align-items:center;gap:.4rem;}
+.btn-act:hover{border-color:var(--gold-b);color:var(--gold-lt);background:var(--gold-bg);}
 
-    @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } .hero h1 { font-size: 2.6rem; } }
-    @media (max-width: 540px) { .page { padding: 1.5rem 1rem 3rem; } .nav-inner { padding: .8rem 1rem; } .hero { padding: 1.5rem; } }
-  </style>
+@media(max-width:900px){.layout{grid-template-columns:1fr;}h1{font-size:2.6rem;}}
+@media(max-width:540px){.page{padding:1.4rem 1rem 4rem;}.nav-in{padding:.75rem 1rem;}}
+</style>
 </head>
 <body>
 
-<header class="navbar">
-  <div class="nav-inner">
-    <div class="brand">HOOPCOACH</div>
-    <div style="display:flex;align-items:center;gap:1.2rem;">
-      <div class="badge">Powered by Mistral AI</div>
+<canvas id="bgCanvas"></canvas>
+
+<div class="above">
+
+<header class="nav">
+  <div class="nav-in">
+    <div class="brand">HOOPCOACH <em>AI</em></div>
+    <div class="nav-r">
+      <span class="badge badge-teal">Mistral-powered training</span>
+      <span class="badge">Basketball Generator</span>
       <a href="https://biq-mind.vercel.app/" target="_blank" rel="noopener noreferrer" class="biq-link" title="Back to BIQ">
         <span class="biq-logo">BIQ</span>
         <span class="biq-sub">Basketball Intelligence</span>
@@ -127,202 +160,639 @@
 
 <main class="page">
   <section class="hero">
-    <div class="kicker">Basketball Workout Generator</div>
-    <h1>TRAIN LIKE A <em>PRO</em></h1>
-    <p>Fill in your player profile and get a complete, position-specific workout — warm-up, skill drills, conditioning, cooldown, coaching points, and motivation — in seconds.</p>
+    <div class="hero-inner">
+      <div class="kicker">Basketball Workout Generator</div>
+      <h1>TRAIN LIKE A<br><em>PRO</em></h1>
+      <p>Fill in your player profile and get a complete, position-specific training session — warm-up, skill drills, conditioning, cooldown, coaching points, and motivation — in seconds.</p>
+    </div>
   </section>
 
+  <div class="presets">
+    <span class="ps-label">Quick fill:</span>
+    <button class="ps-btn" onclick="loadPreset(0)"><span class="ps-tag">PG</span>Shot Creator</button>
+    <button class="ps-btn" onclick="loadPreset(1)"><span class="ps-tag">SF</span>Wing Builder</button>
+    <button class="ps-btn" onclick="loadPreset(2)"><span class="ps-tag">C</span>Big Man Mobility</button>
+  </div>
+
   <div class="layout">
-    <aside class="form-card">
-      <div class="form-card-header">
-        <div class="dot"></div>
-        <h2>PLAYER PROFILE</h2>
-      </div>
-      <div class="form-body">
-        <div class="field">
-          <label>Position</label>
-          <select id="position">
-            <option value="">Select position…</option>
-            <option value="point guard">Point Guard</option>
-            <option value="shooting guard">Shooting Guard</option>
-            <option value="small forward">Small Forward</option>
-            <option value="power forward">Power Forward</option>
-            <option value="center">Center</option>
-            <option value="wing">Wing</option>
-            <option value="combo guard">Combo Guard</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Skill Level</label>
-          <select id="skillLevel">
-            <option value="">Select level…</option>
-            <option value="beginner">Beginner</option>
-            <option value="intermediate">Intermediate</option>
-            <option value="advanced">Advanced</option>
-            <option value="elite">Elite / Collegiate</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Strengths</label>
-          <textarea id="strengths" placeholder="e.g. ball handling, court vision, athleticism…"></textarea>
-        </div>
-        <div class="field">
-          <label>Weaknesses</label>
-          <textarea id="weaknesses" placeholder="e.g. off-hand finishing, shot consistency…"></textarea>
-        </div>
-        <div class="field">
-          <label>Available Time</label>
-          <div class="time-row">
-            <input type="range" id="timeRange" min="10" max="180" step="5" value="45"
-              oninput="document.getElementById('timeDisplay').textContent = this.value + ' min'" />
-            <div class="time-display" id="timeDisplay">45 min</div>
+    <aside class="fc-wrap">
+      <div class="fc-head"><div class="dot"></div><h2>PLAYER PROFILE</h2></div>
+
+      <div class="fc-sec">
+        <div class="fc-sec-lbl">Identity</div>
+        <div class="fc-grid">
+          <div class="field">
+            <label>Position</label>
+            <select id="position">
+              <option value="">Select position…</option>
+              <option value="point guard">Point Guard</option>
+              <option value="shooting guard">Shooting Guard</option>
+              <option value="small forward">Small Forward</option>
+              <option value="power forward">Power Forward</option>
+              <option value="center">Center</option>
+              <option value="wing">Wing</option>
+              <option value="combo guard">Combo Guard</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Skill Level</label>
+            <select id="skillLevel">
+              <option value="">Select level…</option>
+              <option value="beginner">Beginner</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="advanced">Advanced</option>
+              <option value="elite">Elite / Collegiate</option>
+            </select>
           </div>
         </div>
-        <div class="field">
-          <label>Primary Training Goal</label>
-          <input type="text" id="primaryGoal" placeholder="e.g. improve pull-up jumper off the dribble" />
+      </div>
+
+      <div class="fc-sec">
+        <div class="fc-sec-lbl">Attributes</div>
+        <div class="fc-grid">
+          <div class="field">
+            <label>Strengths</label>
+            <textarea id="strengths" placeholder="e.g. ball handling, court vision, athleticism…" maxlength="300" oninput="charCount(this,'sc')"></textarea>
+            <div class="char-c" id="sc">0 / 300</div>
+          </div>
+          <div class="field">
+            <label>Weaknesses</label>
+            <textarea id="weaknesses" placeholder="e.g. off-hand finishing, shot consistency…" maxlength="300" oninput="charCount(this,'wc')"></textarea>
+            <div class="char-c" id="wc">0 / 300</div>
+          </div>
         </div>
-        <div class="field">
-          <label>Environment</label>
-          <select id="environment">
-            <option value="court">Court</option>
-            <option value="gym">Gym</option>
-            <option value="home">Home</option>
-          </select>
+      </div>
+
+      <div class="fc-sec">
+        <div class="fc-sec-lbl">Session</div>
+        <div class="fc-grid">
+          <div class="field">
+            <label>Available Time</label>
+            <div class="row2">
+              <input type="range" id="timeRange" min="10" max="180" step="5" value="45"
+                oninput="document.getElementById('td').textContent=this.value+' min'"/>
+              <div class="time-disp" id="td">45 min</div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Primary Training Goal</label>
+            <input type="text" id="primaryGoal" placeholder="e.g. improve pull-up jumper off the dribble" maxlength="120"/>
+          </div>
+          <div class="field">
+            <label>Environment</label>
+            <select id="environment">
+              <option value="court">Court</option>
+              <option value="gym">Gym</option>
+              <option value="home">Home</option>
+            </select>
+          </div>
         </div>
-        <button class="btn-generate" id="generateBtn" onclick="generateWorkout()">GENERATE WORKOUT</button>
+      </div>
+
+      <div style="padding:1rem 1.4rem;">
+        <button class="btn-gen" id="generateBtn" onclick="generateWorkout()">
+          GENERATE WORKOUT <span class="btn-arrow">→</span>
+        </button>
       </div>
     </aside>
 
-    <section class="output-panel">
-      <div class="output-header">
+    <section class="out-panel">
+      <div class="out-head">
         <h2>WORKOUT OUTPUT</h2>
-        <span class="status-chip" id="statusChip">READY</span>
+        <div class="out-acts">
+          <button class="act-btn" id="copyBtn" onclick="copyWorkout()" disabled>Copy</button>
+          <button class="act-btn" id="saveBtn" onclick="saveWorkout()" disabled>Save .txt</button>
+          <span class="chip" id="statusChip">READY</span>
+        </div>
       </div>
-      <div class="output-body" id="outputBody">
-        <div class="empty-state">
-          <div class="empty-icon">HC</div>
-          <p>Fill in your player profile and hit <strong>Generate Workout</strong> to get your personalized session.</p>
+      <div class="out-body" id="outputBody">
+        <div class="empty">
+          <svg class="empty-court" viewBox="0 0 110 86" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="1" y="1" width="108" height="84" stroke="white" stroke-width="1.5"/>
+            <rect x="32" y="1" width="46" height="24" stroke="white" stroke-width="1.5"/>
+            <circle cx="55" cy="25" r="7" stroke="white" stroke-width="1.5"/>
+            <path d="M8 1 Q8 52 55 52 Q102 52 102 1" stroke="white" stroke-width="1.5" fill="none"/>
+            <line x1="1" y1="43" x2="109" y2="43" stroke="white" stroke-width="1" stroke-dasharray="3 3"/>
+            <circle cx="55" cy="43" r="8" stroke="white" stroke-width="1"/>
+          </svg>
+          <p>Fill in your player profile and hit <strong>Generate Workout</strong> to build your personalized session.</p>
         </div>
       </div>
     </section>
   </div>
 </main>
+</div>
 
 <script>
-  const API_BASE = "";
+/* ==========================================================
+   LIVING PLAYBOOK — Algorithmic Art Background
 
-  function setStatus(state, text) {
-    const chip = document.getElementById("statusChip");
-    chip.textContent = text;
-    chip.className = "status-chip " + state;
+   Philosophy: A basketball court is a coaching whiteboard
+   that never stops thinking. Plays draw themselves into
+   existence — numbered player dots materialize at their
+   positions, dashed gold pass lines trace ball movement,
+   teal arrows carve out cuts and drives, shot arcs climb
+   toward the rim. Each play sequence breathes, holds,
+   then dissolves — an endless, ghost-scored playbook.
+
+   Technique: progressive line-drawing (dashoffset illusion
+   via clipped length), arrowhead geometry, parabolic arcs
+   with fading trails, and a detailed half-court that
+   computes its own geometry from window dimensions.
+========================================================== */
+(function(){
+  const cv = document.getElementById('bgCanvas');
+  const ctx = cv.getContext('2d');
+  let W, H;
+  function resize(){ W = cv.width = innerWidth; H = cv.height = innerHeight; }
+  window.addEventListener('resize', resize); resize();
+
+  /* ── COURT GEOMETRY ────────────────────────────── */
+  // Half-court, top-down view, basket at top center.
+  // All measurements relative to W/H so the court
+  // scales correctly on any viewport.
+  function geo(){
+    const bx  = W * .50;   // basket center x
+    const by  = H * .07;   // baseline y
+    const cxL = W * .215;  // left corner-3 line x
+    const cxR = W * .785;  // right corner-3 line x
+    const cD  = H * .20;   // corner line depth from baseline
+    // 3pt arc radius: distance from basket to corner line end
+    const r3  = Math.hypot(cxR - bx, cD);
+    return { bx, by, cxL, cxR, cD, r3,
+             paintW: W * .19, paintH: H * .26, ftR: W * .093 };
   }
 
-  function escapeHtml(str) {
-    return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-  }
+  function drawCourt(){
+    const g = geo();
+    ctx.save(); ctx.lineWidth = 1;
 
-  function parseWorkout(raw) {
-    const sections = {
-      "WORKOUT TITLE":        { label: "Workout Title", type: "title" },
-      "TOTAL TIME":           { label: "Total Time",    type: "badge" },
-      "WARM-UP":              { label: "Warm-Up",       type: "text"  },
-      "SKILL DRILLS":         { label: "Skill Drills",  type: "text"  },
-      "CONDITIONING":         { label: "Conditioning",  type: "text"  },
-      "COOLDOWN":             { label: "Cooldown",      type: "text"  },
-      "COACHING POINTS":      { label: "Coaching Points", type: "text" },
-      "MOTIVATIONAL SUMMARY": { label: "Motivation",    type: "motivation" },
-    };
-    const keys = Object.keys(sections);
-    const result = [];
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i];
-      const start = raw.indexOf(key);
-      if (start === -1) continue;
-      const nextKey = keys[i + 1];
-      const end = nextKey ? raw.indexOf(nextKey) : raw.length;
-      const content = raw.slice(start + key.length, end !== -1 ? end : undefined).trim();
-      result.push({ ...sections[key], content });
+    // ── gold lines ──
+    ctx.strokeStyle = 'rgba(201,168,76,0.025)';
+    // Outer rectangle
+    ctx.beginPath(); ctx.rect(W*.12, g.by, W*.76, H*.87); ctx.stroke();
+    // Half-court line
+    ctx.beginPath(); ctx.moveTo(W*.12,H*.5); ctx.lineTo(W*.88,H*.5); ctx.stroke();
+    // Paint / key
+    ctx.beginPath(); ctx.rect(g.bx - g.paintW*.5, g.by, g.paintW, g.paintH); ctx.stroke();
+    // Free-throw lane hash marks (4 each side)
+    const hashSpacing = g.paintH / 5;
+    for(let i = 1; i <= 4; i++){
+      const hy = g.by + hashSpacing * i;
+      const hw = W * .012;
+      ctx.beginPath();
+      ctx.moveTo(g.bx - g.paintW*.5 - hw, hy); ctx.lineTo(g.bx - g.paintW*.5, hy);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(g.bx + g.paintW*.5, hy);       ctx.lineTo(g.bx + g.paintW*.5 + hw, hy);
+      ctx.stroke();
     }
-    return result.length > 0 ? result : null;
+    // FT circle — solid top half
+    ctx.beginPath(); ctx.arc(g.bx, g.by + g.paintH, g.ftR, Math.PI, 0); ctx.stroke();
+    // FT circle — dashed bottom half
+    ctx.setLineDash([4,7]);
+    ctx.beginPath(); ctx.arc(g.bx, g.by + g.paintH, g.ftR, 0, Math.PI); ctx.stroke();
+    ctx.setLineDash([]);
+    // Corner-3 lines (vertical segments)
+    ctx.beginPath(); ctx.moveTo(g.cxL, g.by); ctx.lineTo(g.cxL, g.by + g.cD); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(g.cxR, g.by); ctx.lineTo(g.cxR, g.by + g.cD); ctx.stroke();
+    // 3pt arc: from right corner end, curving down through top-of-key, to left corner end
+    const θ = Math.atan2(g.cD, g.cxR - g.bx);
+    ctx.beginPath(); ctx.arc(g.bx, g.by, g.r3, θ, Math.PI - θ); ctx.stroke();
+
+    // ── teal lines ──
+    ctx.strokeStyle = 'rgba(52,198,173,0.022)';
+    // Restricted area
+    ctx.beginPath(); ctx.arc(g.bx, g.by, W * .057, 0, Math.PI); ctx.stroke();
+    // Rim circle
+    const rimR = W * .014;
+    ctx.beginPath(); ctx.arc(g.bx, g.by + rimR, rimR, 0, Math.PI*2); ctx.stroke();
+    // Center circle
+    ctx.strokeStyle = 'rgba(52,198,173,0.016)';
+    ctx.beginPath(); ctx.arc(g.bx, H * .5, W * .065, 0, Math.PI*2); ctx.stroke();
+
+    ctx.restore();
   }
 
-  function renderWorkout(raw) {
-    const sections = parseWorkout(raw);
-    if (!sections) return `<div class="workout-text">${escapeHtml(raw)}</div>`;
-    const html = sections.map(s => {
-      if (s.type === "title") return `<div class="workout-section"><div class="section-label">${s.label}</div><div class="workout-title-text">${escapeHtml(s.content)}</div></div>`;
-      if (s.type === "badge") return `<div class="workout-section"><div class="workout-time-badge">⏱ ${escapeHtml(s.content)}</div></div>`;
-      if (s.type === "motivation") return `<div class="workout-section"><div class="section-label">${s.label}</div><div class="motivation-box">${escapeHtml(s.content)}</div></div>`;
-      return `<div class="workout-section"><div class="section-label">${s.label}</div><div class="workout-text">${escapeHtml(s.content)}</div></div>`;
-    }).join("");
-    return html + `<button class="btn-save" onclick="saveWorkout()">↓ Save as .txt</button>`;
+  /* ── PLAYER SPOTS ───────────────────────────────── */
+  // Returns the 5 canonical 3pt positions adapted to
+  // current screen dimensions. PG is dynamically placed
+  // just outside the arc so the geometry is always correct.
+  function getSpots(){
+    const g = geo();
+    const pgRY = (g.by + g.r3 * 1.06) / H;  // top of arc (+6% outside)
+    const cRY  = (g.by + g.cD) / H;          // corner y (at corner line end)
+    return [
+      { rx:.50,  ry: pgRY, n:'1' },   // PG – top of arc
+      { rx:.765, ry:.40,   n:'2' },   // SG – right wing
+      { rx:.815, ry: cRY,  n:'3' },   // SF – right corner
+      { rx:.235, ry:.40,   n:'4' },   // PF – left wing
+      { rx:.185, ry: cRY,  n:'5' },   // C  – left corner
+    ];
   }
 
-  let lastWorkout = "";
-
-  async function generateWorkout() {
-    const position   = document.getElementById("position").value.trim();
-    const skillLevel = document.getElementById("skillLevel").value.trim();
-    const strengths  = document.getElementById("strengths").value.trim();
-    const weaknesses = document.getElementById("weaknesses").value.trim();
-    const time       = parseInt(document.getElementById("timeRange").value, 10);
-    const goal       = document.getElementById("primaryGoal").value.trim();
-    const env        = document.getElementById("environment").value;
-
-    if (!position || !skillLevel || !strengths || !weaknesses || !goal) {
-      setStatus("error", "INCOMPLETE");
-      document.getElementById("outputBody").innerHTML = `<div class="error-box">Please fill in all fields before generating a workout.</div>`;
-      return;
+  /* ── DRAW PLAYER DOT ────────────────────────────── */
+  function drawDot(rx, ry, label, alpha, hasBall, small){
+    if(alpha <= 0) return;
+    const x = W*rx, y = H*ry;
+    const r = small ? Math.max(8, Math.min(W,H)*.010)
+                    : Math.max(11, Math.min(W,H)*.014);
+    ctx.save(); ctx.globalAlpha = alpha;
+    ctx.fillStyle   = 'rgba(8,10,16,0.94)';
+    ctx.strokeStyle = 'rgba(201,168,76,0.72)';
+    ctx.lineWidth   = 1;
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill(); ctx.stroke();
+    if(label){
+      ctx.fillStyle = '#e8c56e';
+      ctx.font = `700 ${Math.round(r * 1.1)}px 'Barlow Condensed',sans-serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(label, x, y + 1);
     }
+    if(hasBall){
+      const br = r * .44;
+      ctx.fillStyle   = 'rgba(232,197,110,1)';
+      ctx.strokeStyle = 'rgba(140,80,15,.75)';
+      ctx.lineWidth   = .7;
+      ctx.beginPath(); ctx.arc(x + r*.87, y - r*.87, br, 0, Math.PI*2);
+      ctx.fill(); ctx.stroke();
+      // seam arc on mini ball
+      ctx.strokeStyle = 'rgba(130,70,10,.8)'; ctx.lineWidth = .5;
+      ctx.beginPath(); ctx.arc(x + r*.87, y - r*.87, br, -.4, Math.PI*.65);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
 
-    const btn = document.getElementById("generateBtn");
-    btn.disabled = true;
-    setStatus("loading", "GENERATING…");
-    document.getElementById("outputBody").innerHTML = `<div class="loader"><div class="spinner"></div><p>Building your personalized workout…</p></div>`;
+  /* ── PROGRESSIVE LINE ────────────────────────────── */
+  // Draws only `prog` (0→1) fraction of the segment p0→p1,
+  // with optional dashing and arrowhead at the tip.
+  function drawProgLine(p0, p1, prog, alpha, color, lw, dashed, arrow){
+    if(alpha <= 0 || prog <= 0) return;
+    const ex = p0.x + (p1.x - p0.x) * prog;
+    const ey = p0.y + (p1.y - p0.y) * prog;
+    ctx.save(); ctx.globalAlpha = alpha;
+    ctx.strokeStyle = color; ctx.lineWidth = lw;
+    if(dashed) ctx.setLineDash([8, 11]);
+    ctx.beginPath(); ctx.moveTo(p0.x, p0.y); ctx.lineTo(ex, ey); ctx.stroke();
+    ctx.setLineDash([]);
+    if(arrow && prog > .15){
+      const dx = ex - p0.x, dy = ey - p0.y, len = Math.hypot(dx, dy);
+      if(len > 6){
+        const ux = dx/len, uy = dy/len, as = 12;
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.moveTo(ex, ey);
+        ctx.lineTo(ex - ux*as - uy*as*.55, ey - uy*as + ux*as*.55);
+        ctx.lineTo(ex - ux*as + uy*as*.55, ey - uy*as - ux*as*.55);
+        ctx.closePath(); ctx.fill();
+      }
+    }
+    ctx.restore();
+  }
 
-    try {
-      const res = await fetch(`${API_BASE}/generate-workout`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          position,
-          skill_level: skillLevel,
-          strengths,
-          weaknesses,
-          available_time: time,
-          primary_goal: goal,
-          environment: env,
-        }),
-      });
+  /* ── SHOT ARC ─────────────────────────────────────── */
+  class ShotArc {
+    constructor(rx, ry){
+      const g = geo();
+      this.sx  = W*rx;  this.sy = H*ry;
+      this.tx  = g.bx + (Math.random()*W*.015 - W*.0075);
+      this.ty  = g.by + g.ftR * .3;   // near the rim
+      this.cpx = (this.sx + this.tx) / 2 + (Math.random()*W*.03 - W*.015);
+      this.cpy = Math.min(this.sy, this.ty) - H * (.10 + Math.random()*.10);
+      this.t = 0; this.trail = []; this.maxT = 55;
+      this.alive = true; this.a = 0; this.fading = false;
+    }
+    p(t){ const u=1-t; return{x:u*u*this.sx+2*u*t*this.cpx+t*t*this.tx, y:u*u*this.sy+2*u*t*this.cpy+t*t*this.ty}; }
+    update(){
+      if(!this.alive) return;
+      this.a = Math.min(1, this.a + .055);
+      if(!this.fading){
+        this.t = Math.min(1, this.t + .022);
+        this.trail.push(this.p(this.t));
+        if(this.trail.length > this.maxT) this.trail.shift();
+        if(this.t >= 1) this.fading = true;
+      } else {
+        this.a -= .02;
+        if(this.trail.length) this.trail.shift();
+        if(this.a <= 0 || !this.trail.length) this.alive = false;
+      }
+    }
+    draw(){
+      if(!this.alive || this.trail.length < 2) return;
+      ctx.save();
+      for(let i = 1; i < this.trail.length; i++){
+        const pg = i / this.trail.length;
+        ctx.globalAlpha = this.a * pg * .62;
+        ctx.strokeStyle = '#c9a84c'; ctx.lineWidth = 1.6 * pg;
+        ctx.beginPath();
+        ctx.moveTo(this.trail[i-1].x, this.trail[i-1].y);
+        ctx.lineTo(this.trail[i].x, this.trail[i].y);
+        ctx.stroke();
+      }
+      if(!this.fading && this.trail.length){
+        const l = this.trail[this.trail.length-1];
+        ctx.globalAlpha = this.a * .95;
+        ctx.fillStyle = 'rgba(232,197,110,1)';
+        ctx.beginPath(); ctx.arc(l.x, l.y, 3, 0, Math.PI*2); ctx.fill();
+      }
+      ctx.restore();
+    }
+  }
 
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({ detail: "Unknown error" }));
-        throw new Error(err.detail || `HTTP ${res.status}`);
+  /* ── PLAY SCRIPTS ────────────────────────────────── */
+  // Each event: { t, type, fi, ti, from, to, dur }
+  // fi/ti = player index (0-4). from/to = {rx,ry} custom position.
+  // type: 'pass' = dashed gold line  | 'cut' = teal arrow | 'shot' = ShotArc
+  const PLAYS = [
+    // Play 1 — Ball reversal → right corner 3 (SF)
+    [
+      { t:0,   type:'pass', fi:0, ti:1, dur:55 },                                   // PG → SG
+      { t:18,  type:'cut',  from:{rx:.41,ry:.33}, to:{rx:.50,ry:.115}, dur:60 },    // L elbow backdoor cut
+      { t:60,  type:'pass', fi:1, ti:2, dur:50 },                                   // SG → SF
+      { t:115, type:'shot', fi:2 },
+    ],
+    // Play 2 — Skip pass left → left corner 3 (C)
+    [
+      { t:0,   type:'pass', fi:0, ti:3, dur:55 },                                   // PG → PF
+      { t:22,  type:'cut',  from:{rx:.59,ry:.33}, to:{rx:.50,ry:.115}, dur:60 },    // R elbow cut to rim
+      { t:60,  type:'pass', fi:3, ti:4, dur:50 },                                   // PF → C
+      { t:115, type:'shot', fi:4 },
+    ],
+    // Play 3 — PG drive, kick to SG wing 3
+    [
+      { t:0,   type:'cut',  fi:0, to:{rx:.50,ry:.30}, dur:60 },                     // PG drive to paint
+      { t:22,  type:'cut',  from:{rx:.41,ry:.33}, ti:3, dur:55 },                   // L elbow fills to PF spot
+      { t:52,  type:'pass', from:{rx:.50,ry:.31}, ti:1, dur:50 },                   // Kick to SG
+      { t:107, type:'shot', fi:1 },
+    ],
+    // Play 4 — SG iso wing 3 off PG dribble handoff
+    [
+      { t:0,   type:'cut',  fi:1, to:{rx:.62,ry:.42}, dur:55 },                     // SG curl toward key
+      { t:18,  type:'cut',  from:{rx:.59,ry:.33}, to:{rx:.72,ry:.38}, dur:50 },     // R elbow fills wing
+      { t:55,  type:'pass', fi:0, to:{rx:.62,ry:.42}, dur:48 },                     // PG handoff zone
+      { t:108, type:'shot', fi:1 },
+    ],
+  ];
+
+  /* ── PLAY ENGINE ─────────────────────────────────── */
+  let pIdx = 0, pFrame = 0, pAlpha = 0, pPhase = 'in';
+  let lines = [], shots = [], ballOn = 0;
+
+  function startPlay(){ lines=[]; shots=[]; pFrame=0; pAlpha=0; pPhase='in'; ballOn=0; }
+  startPlay();
+
+  function sp(i){ const s=getSpots()[i]; return {x:W*s.rx, y:H*s.ry, rx:s.rx, ry:s.ry}; }
+  function rp(r){ return {x:W*r.rx, y:H*r.ry}; }
+
+  function updatePlay(){
+    const def = PLAYS[pIdx % PLAYS.length];
+    // Total duration: latest event end + cooldown
+    const total = def.reduce((m,e) => Math.max(m, e.t + (e.dur || 0) + 65), 0);
+
+    if(pPhase === 'in'){
+      pAlpha = Math.min(1, pAlpha + .024);
+      if(pAlpha >= 1) pPhase = 'run';
+
+    } else if(pPhase === 'run'){
+      pFrame++;
+
+      // Spawn events
+      for(const ev of def){
+        if(pFrame === ev.t + 1){
+          const p0 = ev.fi !== undefined ? sp(ev.fi) : rp(ev.from || {rx:.5,ry:.5});
+          const p1 = ev.ti !== undefined ? sp(ev.ti) : rp(ev.to   || {rx:.5,ry:.5});
+          if(ev.type === 'pass'){
+            lines.push({ p0,p1, prog:0, dur:ev.dur, sf:pFrame, alpha:0,
+                         dashed:true, arrow:false, color:'#c9a84c', lw:1.3 });
+            if(ev.ti !== undefined) ballOn = ev.ti;
+          } else if(ev.type === 'cut'){
+            lines.push({ p0,p1, prog:0, dur:ev.dur, sf:pFrame, alpha:0,
+                         dashed:false, arrow:true, color:'#34c6ad', lw:1.6 });
+          } else if(ev.type === 'shot'){
+            const s = sp(ev.fi); shots.push(new ShotArc(s.rx, s.ry));
+          }
+        }
       }
 
-      const data = await res.json();
-      lastWorkout = data.workout;
-      setStatus("ready", "READY");
-      document.getElementById("outputBody").innerHTML = `<div class="workout-output">${renderWorkout(lastWorkout)}</div>`;
+      // Advance line animations
+      for(const ln of lines){
+        ln.alpha = Math.min(.82, ln.alpha + .068);
+        ln.prog  = Math.min(1, (pFrame - ln.sf) / ln.dur);
+      }
+      for(const s of shots) s.update();
+      shots = shots.filter(s => s.alive);
+      if(pFrame >= total) pPhase = 'out';
 
-    } catch (err) {
-      setStatus("error", "ERROR");
-      document.getElementById("outputBody").innerHTML = `<div class="error-box"><strong>Error:</strong> ${escapeHtml(err.message)}</div>`;
-    } finally {
-      btn.disabled = false;
+    } else if(pPhase === 'out'){
+      pAlpha = Math.max(0, pAlpha - .02);
+      for(const ln of lines) ln.alpha = Math.max(0, ln.alpha - .02);
+      for(const s of shots){ s.update(); }
+      shots = shots.filter(s => s.alive);
+      if(pAlpha <= 0 && !shots.length){ pIdx++; startPlay(); }
     }
   }
 
-  function saveWorkout() {
-    if (!lastWorkout) return;
-    const blob = new Blob([lastWorkout], { type: "text/plain" });
-    const url  = URL.createObjectURL(blob);
-    const a    = document.createElement("a");
-    const ts   = new Date().toISOString().slice(0,19).replace(/[:T]/g, "-");
-    a.href = url; a.download = `workout_${ts}.txt`; a.click();
-    URL.revokeObjectURL(url);
+  function drawPlay(){
+    const spts = getSpots();
+    // Post / elbow markers (faint, no label)
+    drawDot(.59, .33, '', pAlpha * .24, false, true);
+    drawDot(.41, .33, '', pAlpha * .24, false, true);
+    // Main player positions
+    for(let i = 0; i < spts.length; i++){
+      drawDot(spts[i].rx, spts[i].ry, spts[i].n, pAlpha * .54, i === ballOn, false);
+    }
+    // Pass and cut lines
+    for(const ln of lines)
+      drawProgLine(ln.p0, ln.p1, ln.prog, ln.alpha * pAlpha, ln.color, ln.lw, ln.dashed, ln.arrow);
+    // Shot arcs
+    for(const s of shots) s.draw();
   }
+
+  /* ── LEGEND (top-left, very subtle) ─────────────── */
+  function drawLegend(){
+    if(pAlpha < .3) return;
+    ctx.save();
+    ctx.globalAlpha = pAlpha * .28;
+    ctx.font = `500 ${Math.round(W * .009)}px 'Barlow Condensed',sans-serif`;
+    ctx.textBaseline = 'middle';
+    const lx = W * .135, ly = H * .93, gap = W * .09;
+    // Pass line swatch
+    ctx.strokeStyle = '#c9a84c'; ctx.lineWidth = 1.2;
+    ctx.setLineDash([5,7]);
+    ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(lx + W*.038, ly); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#c9a84c'; ctx.textAlign = 'left';
+    ctx.fillText('PASS', lx + W*.044, ly);
+    // Cut arrow swatch
+    ctx.strokeStyle = '#34c6ad'; ctx.lineWidth = 1.4;
+    ctx.beginPath(); ctx.moveTo(lx + gap, ly); ctx.lineTo(lx + gap + W*.038, ly); ctx.stroke();
+    ctx.fillStyle = '#34c6ad';
+    ctx.beginPath();
+    const ax = lx + gap + W*.038;
+    ctx.moveTo(ax, ly); ctx.lineTo(ax-8,-6+ly); ctx.lineTo(ax-8,6+ly); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#34c6ad'; ctx.fillText('CUT', lx + gap + W*.044, ly);
+    ctx.restore();
+  }
+
+  /* ── MAIN LOOP ────────────────────────────────────── */
+  (function loop(){
+    requestAnimationFrame(loop);
+    ctx.clearRect(0, 0, W, H);
+    drawCourt();
+    updatePlay();
+    drawPlay();
+    drawLegend();
+  })();
+
+})();
+
+/* ==========================================================
+   QUICK FILL PRESETS
+========================================================== */
+const PRESETS = [
+  {pos:'point guard',lvl:'intermediate',str:'ball handling, pace control, mid-range touch',weak:'finishing through contact, left-hand passing reads',time:45,goal:'improve game-speed shot creation and tighter passing under pressure',env:'court'},
+  {pos:'small forward',lvl:'beginner',str:'hustle, defensive effort, athleticism',weak:'shooting form consistency, footwork on catch-and-shoot',time:30,goal:'build a reliable shooting foundation and improve off-ball movement',env:'gym'},
+  {pos:'center',lvl:'advanced',str:'rebounding, touch around the rim, screen setting',weak:'mobility, short-roll decision making, facing up',time:60,goal:'become more effective in modern pick-and-roll offense',env:'gym'}
+];
+function loadPreset(i){
+  const p=PRESETS[i];
+  document.getElementById('position').value=p.pos;
+  document.getElementById('skillLevel').value=p.lvl;
+  document.getElementById('strengths').value=p.str;
+  document.getElementById('weaknesses').value=p.weak;
+  document.getElementById('timeRange').value=p.time;
+  document.getElementById('td').textContent=p.time+' min';
+  document.getElementById('primaryGoal').value=p.goal;
+  document.getElementById('environment').value=p.env;
+  charCount(document.getElementById('strengths'),'sc');
+  charCount(document.getElementById('weaknesses'),'wc');
+}
+function charCount(el,id){
+  const n=el.value.length,max=+el.getAttribute('maxlength');
+  const s=document.getElementById(id);
+  s.textContent=`${n} / ${max}`;
+  s.className='char-c'+(n>max*.88?' warn':'');
+}
+
+/* ==========================================================
+   STATUS & HELPERS  (original, unchanged)
+========================================================== */
+const API_BASE="";
+function setStatus(state,text){const c=document.getElementById("statusChip");c.textContent=text;c.className="chip "+state;}
+function escapeHtml(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+/* ==========================================================
+   WORKOUT PARSING & RENDERING  (unchanged logic)
+========================================================== */
+const SDEFS=[
+  {key:"WORKOUT TITLE",  label:"Workout Title",  icon:"◈",type:"title"},
+  {key:"TOTAL TIME",     label:"Total Time",     icon:"◷",type:"badge"},
+  {key:"WARM-UP",        label:"Warm-Up",        icon:"↑",type:"sec"},
+  {key:"SKILL DRILLS",   label:"Skill Drills",   icon:"◎",type:"sec"},
+  {key:"CONDITIONING",   label:"Conditioning",   icon:"⚡",type:"sec"},
+  {key:"COOLDOWN",       label:"Cooldown",       icon:"↓",type:"sec"},
+  {key:"COACHING POINTS",label:"Coaching Points",icon:"▸",type:"sec"},
+  {key:"MOTIVATIONAL SUMMARY",label:"Motivation",icon:"★",type:"motiv"},
+];
+function parseWorkout(raw){
+  const res=[];
+  for(let i=0;i<SDEFS.length;i++){
+    const d=SDEFS[i],st=raw.indexOf(d.key);
+    if(st===-1)continue;
+    const cs=st+d.key.length;let end=raw.length;
+    for(let j=i+1;j<SDEFS.length;j++){const nx=raw.indexOf(SDEFS[j].key,cs);if(nx!==-1&&nx<end){end=nx;break;}}
+    res.push({...d,content:raw.slice(cs,end).trim()});
+  }
+  return res.length?res:null;
+}
+function renderWorkout(raw){
+  const secs=parseWorkout(raw);
+  if(!secs)return`<div class="ws"><div class="ws-body">${escapeHtml(raw)}</div></div>`;
+  let tH="",mH="",sH="";
+  for(const s of secs){
+    if(s.type==="title"){tH=`<div class="wo-title">${escapeHtml(s.content)}</div>`;}
+    else if(s.type==="badge"){mH+=`<span class="wo-badge">${escapeHtml(s.icon)} ${escapeHtml(s.content)}</span>`;}
+    else if(s.type==="sec"){sH+=`<div class="ws"><div class="ws-head"><div class="ws-icon">${escapeHtml(s.icon)}</div><span class="ws-label">${escapeHtml(s.label)}</span></div><div class="ws-body">${escapeHtml(s.content)}</div></div>`;}
+    else if(s.type==="motiv"){sH+=`<div class="ws motiv"><div class="ws-head"><div class="ws-icon">${escapeHtml(s.icon)}</div><span class="ws-label">${escapeHtml(s.label)}</span></div><div class="ws-body">${escapeHtml(s.content)}</div></div>`;}
+  }
+  return`<div class="wo"><div class="wo-header">${tH}<div class="wo-meta">${mH}</div></div><div class="wo-sections">${sH}</div><div class="wo-footer"><button class="btn-act" onclick="copyWorkout()">↑ Copy</button><button class="btn-act" onclick="saveWorkout()">↓ Save .txt</button></div></div>`;
+}
+
+/* ==========================================================
+   GENERATE WORKOUT — ORIGINAL BACKEND CALL, UNCHANGED
+   POST /generate-workout → { workout: string }
+========================================================== */
+let lastWorkout="";
+
+async function generateWorkout(){
+  const position   =document.getElementById("position").value.trim();
+  const skillLevel =document.getElementById("skillLevel").value.trim();
+  const strengths  =document.getElementById("strengths").value.trim();
+  const weaknesses =document.getElementById("weaknesses").value.trim();
+  const time       =parseInt(document.getElementById("timeRange").value,10);
+  const goal       =document.getElementById("primaryGoal").value.trim();
+  const env        =document.getElementById("environment").value;
+
+  if(!position||!skillLevel||!strengths||!weaknesses||!goal){
+    setStatus("error","INCOMPLETE");
+    document.getElementById("outputBody").innerHTML=`<div class="err-box">Please fill in all fields before generating a workout.</div>`;
+    return;
+  }
+
+  const btn=document.getElementById("generateBtn");
+  const cpBtn=document.getElementById("copyBtn");
+  const svBtn=document.getElementById("saveBtn");
+  btn.disabled=true;cpBtn.disabled=true;svBtn.disabled=true;
+  setStatus("loading","GENERATING…");
+  document.getElementById("outputBody").innerHTML=`<div class="loader"><div class="spin-ring"></div><p class="load-msg">Building your personalized workout…</p></div>`;
+
+  try{
+    const res=await fetch(`${API_BASE}/generate-workout`,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        position,
+        skill_level:skillLevel,
+        strengths,
+        weaknesses,
+        available_time:time,
+        primary_goal:goal,
+        environment:env,
+      }),
+    });
+    if(!res.ok){
+      const err=await res.json().catch(()=>({detail:"Unknown error"}));
+      throw new Error(err.detail||`HTTP ${res.status}`);
+    }
+    const data=await res.json();
+    lastWorkout=data.workout;
+    setStatus("ready","READY");
+    cpBtn.disabled=false;svBtn.disabled=false;
+    document.getElementById("outputBody").innerHTML=renderWorkout(lastWorkout);
+  }catch(err){
+    setStatus("error","ERROR");
+    document.getElementById("outputBody").innerHTML=`<div class="err-box"><strong>Error:</strong> ${escapeHtml(err.message)}</div>`;
+  }finally{
+    btn.disabled=false;
+  }
+}
+
+function saveWorkout(){
+  if(!lastWorkout)return;
+  const blob=new Blob([lastWorkout],{type:"text/plain"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.download=`workout_${new Date().toISOString().slice(0,19).replace(/[:T]/g,"-")}.txt`;
+  a.click();URL.revokeObjectURL(url);
+}
+
+function copyWorkout(){
+  if(!lastWorkout)return;
+  navigator.clipboard.writeText(lastWorkout).then(()=>{
+    setStatus("ready","COPIED!");
+    setTimeout(()=>setStatus("ready","READY"),1800);
+  });
+}
 </script>
 </body>
 </html>
